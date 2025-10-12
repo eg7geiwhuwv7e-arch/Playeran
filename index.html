@@ -178,11 +178,6 @@
             z-index: 9998;
             padding: 20px;
             text-align: center;
-            display: none;
-        }
-
-        .browser-message.active {
-            display: flex;
         }
 
         .browser-icon {
@@ -212,6 +207,25 @@
             margin-top: 20px;
             max-width: 500px;
             line-height: 1.5;
+        }
+
+        .telegram-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--highlight), #ff7b93);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 18px;
+            margin-top: 20px;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+        }
+
+        .telegram-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.6);
         }
 
         body {
@@ -1481,7 +1495,7 @@
     </div>
 
     <!-- Browser Message (Shown when opened in browser without admin parameter) -->
-    <div id="browser-message" class="browser-message">
+    <div id="browser-message" class="browser-message" style="display: none;">
         <div class="browser-icon">
             <i class="fas fa-exclamation-circle"></i>
         </div>
@@ -1490,6 +1504,9 @@
             This application is designed to work exclusively within the Telegram messenger. 
             Please open this link in Telegram to access the RichAirDrop bot and start earning SHIB.
         </div>
+        <a href="https://t.me/Rich_air_drop_bot" class="telegram-button">
+            <i class="fab fa-telegram"></i> Open in Telegram
+        </a>
         <div class="browser-note">
             If you are an administrator, you can access the admin panel by adding <strong>?admin=true</strong> to the URL.
         </div>
@@ -2018,14 +2035,21 @@
         let loadingProgress = 0;
         let loadingInterval = null;
 
-        // Platform Detection
+        // Platform Detection - IMPROVED
         function isTelegramWebApp() {
-            return window.Telegram && window.Telegram.WebApp;
+            // More robust Telegram WebApp detection
+            return window.Telegram && 
+                   window.Telegram.WebApp && 
+                   window.Telegram.WebApp.initData && 
+                   window.Telegram.WebApp.initDataUnsafe;
         }
 
-        // Check if running in browser (not Telegram)
+        // Check if running in browser (not Telegram) - IMPROVED
         function isBrowser() {
-            return !isTelegramWebApp();
+            // More reliable browser detection
+            return !isTelegramWebApp() || 
+                   window.location.search.includes('admin=true') ||
+                   !window.Telegram;
         }
 
         // Update loading screen
@@ -2048,7 +2072,7 @@
             }
         }
 
-        // Initialize based on platform
+        // Initialize based on platform - IMPROVED
         function initializeApp() {
             // Start loading screen progress simulation
             loadingInterval = setInterval(() => {
@@ -2057,25 +2081,7 @@
                 }
             }, 500);
             
-            if (isTelegramWebApp()) {
-                // Telegram Web App - Show User Panel Only
-                console.log("Running in Telegram Web App - Showing User Panel");
-                updateLoadingScreen(20, "Connecting to Telegram");
-                setTimeout(() => {
-                    initializeTelegramUser();
-                }, 1000);
-            } else {
-                // Browser - Check if admin
-                console.log("Running in Browser - Checking Admin Status");
-                updateLoadingScreen(20, "Initializing App");
-                setTimeout(() => {
-                    checkAdminStatus();
-                }, 1000);
-            }
-        }
-
-        // Check if user is admin - ONLY IN BROWSER
-        function checkAdminStatus() {
+            // First, check if this is an admin request
             const urlParams = new URLSearchParams(window.location.search);
             const isAdmin = urlParams.get('admin') === 'true';
             
@@ -2092,8 +2098,15 @@
                     loginPanel.style.display = 'block';
                     updateLoadingScreen(100, "Ready");
                 }, 1000);
+            } else if (isTelegramWebApp()) {
+                // Telegram Web App - Show User Panel Only
+                console.log("Running in Telegram Web App - Showing User Panel");
+                updateLoadingScreen(20, "Connecting to Telegram");
+                setTimeout(() => {
+                    initializeTelegramUser();
+                }, 1000);
             } else {
-                // Show browser message - no admin parameter
+                // Browser - Show browser message
                 console.log("Browser mode detected - Showing Browser Message");
                 updateLoadingScreen(50, "Checking Access");
                 setTimeout(() => {
@@ -2103,7 +2116,7 @@
                     adminPanel.style.display = 'none';
                     
                     // Show browser message
-                    browserMessage.classList.add('active');
+                    browserMessage.style.display = 'flex';
                     updateLoadingScreen(100, "Ready");
                 }, 1000);
             }
