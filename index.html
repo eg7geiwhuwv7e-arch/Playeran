@@ -163,7 +163,7 @@
             animation: dots 1.5s steps(4, end) infinite;
         }
 
-        /* Browser Message Styles */
+        /* Browser Message Styles - ALWAYS VISIBLE IN BROWSER */
         .browser-message {
             position: fixed;
             top: 0;
@@ -171,13 +171,17 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(135deg, var(--accent), var(--primary-bg));
-            display: flex;
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9998;
             padding: 20px;
             text-align: center;
+        }
+
+        .browser-message.active {
+            display: flex;
         }
 
         .browser-icon {
@@ -209,23 +213,28 @@
             line-height: 1.5;
         }
 
+        /* Add a button to open in Telegram */
         .telegram-button {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--highlight), #ff7b93);
+            background: linear-gradient(135deg, #0088cc, #34b7f1);
             color: white;
-            text-decoration: none;
-            padding: 15px 30px;
+            border: none;
             border-radius: 12px;
-            font-weight: 600;
+            padding: 16px 30px;
+            font-weight: 700;
             font-size: 18px;
-            margin-top: 20px;
+            cursor: pointer;
             transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            text-decoration: none;
         }
 
         .telegram-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.6);
+            box-shadow: 0 8px 25px rgba(0, 136, 204, 0.6);
         }
 
         body {
@@ -1495,7 +1504,7 @@
     </div>
 
     <!-- Browser Message (Shown when opened in browser without admin parameter) -->
-    <div id="browser-message" class="browser-message" style="display: none;">
+    <div id="browser-message" class="browser-message">
         <div class="browser-icon">
             <i class="fas fa-exclamation-circle"></i>
         </div>
@@ -2035,21 +2044,14 @@
         let loadingProgress = 0;
         let loadingInterval = null;
 
-        // Platform Detection - IMPROVED
+        // Platform Detection
         function isTelegramWebApp() {
-            // More robust Telegram WebApp detection
-            return window.Telegram && 
-                   window.Telegram.WebApp && 
-                   window.Telegram.WebApp.initData && 
-                   window.Telegram.WebApp.initDataUnsafe;
+            return window.Telegram && window.Telegram.WebApp;
         }
 
-        // Check if running in browser (not Telegram) - IMPROVED
+        // Check if running in browser (not Telegram)
         function isBrowser() {
-            // More reliable browser detection
-            return !isTelegramWebApp() || 
-                   window.location.search.includes('admin=true') ||
-                   !window.Telegram;
+            return !isTelegramWebApp();
         }
 
         // Update loading screen
@@ -2072,7 +2074,7 @@
             }
         }
 
-        // Initialize based on platform - IMPROVED
+        // Initialize based on platform
         function initializeApp() {
             // Start loading screen progress simulation
             loadingInterval = setInterval(() => {
@@ -2081,7 +2083,25 @@
                 }
             }, 500);
             
-            // First, check if this is an admin request
+            if (isTelegramWebApp()) {
+                // Telegram Web App - Show User Panel Only
+                console.log("Running in Telegram Web App - Showing User Panel");
+                updateLoadingScreen(20, "Connecting to Telegram");
+                setTimeout(() => {
+                    initializeTelegramUser();
+                }, 1000);
+            } else {
+                // Browser - Check if admin
+                console.log("Running in Browser - Checking Admin Status");
+                updateLoadingScreen(20, "Initializing App");
+                setTimeout(() => {
+                    checkAdminStatus();
+                }, 1000);
+            }
+        }
+
+        // Check if user is admin - ONLY IN BROWSER
+        function checkAdminStatus() {
             const urlParams = new URLSearchParams(window.location.search);
             const isAdmin = urlParams.get('admin') === 'true';
             
@@ -2098,15 +2118,8 @@
                     loginPanel.style.display = 'block';
                     updateLoadingScreen(100, "Ready");
                 }, 1000);
-            } else if (isTelegramWebApp()) {
-                // Telegram Web App - Show User Panel Only
-                console.log("Running in Telegram Web App - Showing User Panel");
-                updateLoadingScreen(20, "Connecting to Telegram");
-                setTimeout(() => {
-                    initializeTelegramUser();
-                }, 1000);
             } else {
-                // Browser - Show browser message
+                // Show browser message - no admin parameter
                 console.log("Browser mode detected - Showing Browser Message");
                 updateLoadingScreen(50, "Checking Access");
                 setTimeout(() => {
@@ -2115,8 +2128,8 @@
                     userPanel.style.display = 'none';
                     adminPanel.style.display = 'none';
                     
-                    // Show browser message
-                    browserMessage.style.display = 'flex';
+                    // Show browser message - ALWAYS SHOW IN BROWSER
+                    browserMessage.classList.add('active');
                     updateLoadingScreen(100, "Ready");
                 }, 1000);
             }
@@ -2279,10 +2292,28 @@
                         lastLogin: new Date().toISOString()
                     };
                     
-                    // Check for referral code in URL
+                    // Check for referral code in URL - FIXED REFERRAL SYSTEM
                     const urlParams = new URLSearchParams(window.location.search);
-                    const refCode = urlParams.get('ref');
+                    let refCode = urlParams.get('ref');
+                    
+                    // Also check for start parameter (Telegram deep linking)
+                    if (!refCode) {
+                        const startParam = urlParams.get('start');
+                        if (startParam && startParam.startsWith('ref')) {
+                            refCode = startParam;
+                        }
+                    }
+                    
+                    // Check Telegram WebApp start parameter
+                    if (!refCode && isTelegramWebApp()) {
+                        const tg = window.Telegram.WebApp;
+                        if (tg.initDataUnsafe.start_param && tg.initDataUnsafe.start_param.startsWith('ref')) {
+                            refCode = tg.initDataUnsafe.start_param;
+                        }
+                    }
+                    
                     if (refCode) {
+                        console.log("Referral code detected:", refCode);
                         // Find user with this referral code and reward them
                         await rewardReferrer(refCode);
                         userData.referredBy = refCode;
@@ -2349,9 +2380,11 @@
             }
         }
 
-        // Reward referrer with SHIB
+        // Reward referrer with SHIB - FIXED REFERRAL FUNCTION
         async function rewardReferrer(referralCode) {
             try {
+                console.log("Searching for user with referral code:", referralCode);
+                
                 // Find user with this referral code in Firebase
                 const usersSnapshot = await db.collection('users').where('referralCode', '==', referralCode).get();
                 
@@ -2359,21 +2392,34 @@
                     const referrerDoc = usersSnapshot.docs[0];
                     const referrerData = referrerDoc.data();
                     
+                    console.log("Found referrer:", referrerData.displayName, "with balance:", referrerData.balance);
+                    
                     // Reward the referrer
-                    referrerData.balance += systemSettings.referralReward;
-                    referrerData.referralCount += 1;
+                    const newBalance = (referrerData.balance || 0) + systemSettings.referralReward;
+                    const newReferralCount = (referrerData.referralCount || 0) + 1;
+                    
+                    console.log("Rewarding referrer with:", systemSettings.referralReward, "SHIB. New balance:", newBalance);
                     
                     // Update in Firebase
                     await db.collection('users').doc(referrerDoc.id).update({
-                        balance: referrerData.balance,
-                        referralCount: referrerData.referralCount
+                        balance: newBalance,
+                        referralCount: newReferralCount
                     });
                     
-                    // Update localStorage
-                    localStorage.setItem(`user_${referrerDoc.id}`, JSON.stringify(referrerData));
+                    // Update localStorage if user is current user
+                    if (currentUser && currentUser.uid === referrerDoc.id) {
+                        referrerData.balance = newBalance;
+                        referrerData.referralCount = newReferralCount;
+                        localStorage.setItem(`user_${referrerDoc.id}`, JSON.stringify(referrerData));
+                        updateUserUI();
+                    }
                     
                     // Update leaderboard
                     loadLeaderboard();
+                    
+                    console.log("Referral reward successfully given to:", referrerData.displayName);
+                } else {
+                    console.log("No user found with referral code:", referralCode);
                 }
             } catch (error) {
                 console.error("Error rewarding referrer:", error);
