@@ -1964,13 +1964,13 @@
 
         // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyDOMdnCV2hXOveocXtEnnwICzJjp0Bb4Mg",
-            authDomain: "superairdrop-90c6d.firebaseapp.com",
-            projectId: "superairdrop-90c6d",
-            storageBucket: "superairdrop-90c6d.firebasestorage.app",
-            messagingSenderId: "623122845001",
-            appId: "1:623122845001:web:5b0758778b7424dbf75e98"
-        };
+  apiKey: "AIzaSyDOMdnCV2hXOveocXtEnnwICzJjp0Bb4Mg",
+  authDomain: "superairdrop-90c6d.firebaseapp.com",
+  projectId: "superairdrop-90c6d",
+  storageBucket: "superairdrop-90c6d.firebasestorage.app",
+  messagingSenderId: "623122845001",
+  appId: "1:623122845001:web:5b0758778b7424dbf75e98"
+};
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -2281,10 +2281,17 @@
                     
                     // Check for referral code in URL
                     const urlParams = new URLSearchParams(window.location.search);
-                    const refCode = urlParams.get('ref');
+                    const startParam = urlParams.get('start');
+                    let refCode = null;
+                    
+                    // Check if start parameter contains a referral code
+                    if (startParam && startParam.startsWith('ref')) {
+                        refCode = startParam;
+                    }
+                    
                     if (refCode) {
                         // Find user with this referral code and reward them
-                        await rewardReferrer(refCode);
+                        await rewardReferrer(refCode, userId);
                         userData.referredBy = refCode;
                     }
                     
@@ -2349,8 +2356,8 @@
             }
         }
 
-        // Reward referrer with SHIB
-        async function rewardReferrer(referralCode) {
+        // Reward referrer with SHIB - FIXED VERSION
+        async function rewardReferrer(referralCode, newUserId) {
             try {
                 // Find user with this referral code in Firebase
                 const usersSnapshot = await db.collection('users').where('referralCode', '==', referralCode).get();
@@ -2359,21 +2366,49 @@
                     const referrerDoc = usersSnapshot.docs[0];
                     const referrerData = referrerDoc.data();
                     
-                    // Reward the referrer
-                    referrerData.balance += systemSettings.referralReward;
-                    referrerData.referralCount += 1;
+                    // Check if this user has already been referred by this referrer
+                    const referralsCollection = await db.collection('referrals')
+                        .where('referrerId', '==', referrerDoc.id)
+                        .where('referredUserId', '==', newUserId)
+                        .get();
                     
-                    // Update in Firebase
-                    await db.collection('users').doc(referrerDoc.id).update({
-                        balance: referrerData.balance,
-                        referralCount: referrerData.referralCount
-                    });
-                    
-                    // Update localStorage
-                    localStorage.setItem(`user_${referrerDoc.id}`, JSON.stringify(referrerData));
-                    
-                    // Update leaderboard
-                    loadLeaderboard();
+                    if (referralsCollection.empty) {
+                        // Reward the referrer
+                        referrerData.balance += systemSettings.referralReward;
+                        referrerData.referralCount += 1;
+                        
+                        // Update in Firebase
+                        await db.collection('users').doc(referrerDoc.id).update({
+                            balance: referrerData.balance,
+                            referralCount: referrerData.referralCount
+                        });
+                        
+                        // Create referral record
+                        await db.collection('referrals').add({
+                            referrerId: referrerDoc.id,
+                            referredUserId: newUserId,
+                            rewardAmount: systemSettings.referralReward,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        // Update localStorage for the referrer
+                        localStorage.setItem(`user_${referrerDoc.id}`, JSON.stringify(referrerData));
+                        
+                        // If the referrer is the current user, update the current userData and UI
+                        if (currentUser && currentUser.uid === referrerDoc.id) {
+                            userData = referrerData;
+                            updateUserUI();
+                        }
+                        
+                        // Update leaderboard
+                        loadLeaderboard();
+                        
+                        console.log(`Referral reward given: ${systemSettings.referralReward} SHIB to ${referrerData.displayName}`);
+                    } else {
+                        console.log("User already referred by this referrer");
+                    }
+                } else {
+                    console.log("Referrer not found with code:", referralCode);
                 }
             } catch (error) {
                 console.error("Error rewarding referrer:", error);
@@ -2383,13 +2418,26 @@
                     if (key && key.startsWith('user_')) {
                         const user = JSON.parse(localStorage.getItem(key));
                         if (user.referralCode === referralCode) {
-                            // Reward the referrer
-                            user.balance += systemSettings.referralReward;
-                            user.referralCount += 1;
-                            localStorage.setItem(key, JSON.stringify(user));
-                            
-                            // Update leaderboard
-                            loadLeaderboard();
+                            // Check if this referral already exists
+                            const referralKey = `referral_${user.uid}_${newUserId}`;
+                            if (!localStorage.getItem(referralKey)) {
+                                // Reward the referrer
+                                user.balance += systemSettings.referralReward;
+                                user.referralCount += 1;
+                                localStorage.setItem(key, JSON.stringify(user));
+                                
+                                // Mark referral as completed
+                                localStorage.setItem(referralKey, 'true');
+                                
+                                // If the referrer is the current user, update the current userData and UI
+                                if (currentUser && currentUser.uid === user.uid) {
+                                    userData = user;
+                                    updateUserUI();
+                                }
+                                
+                                // Update leaderboard
+                                loadLeaderboard();
+                            }
                             break;
                         }
                     }
