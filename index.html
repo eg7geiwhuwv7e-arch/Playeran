@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CashReward App</title>
 
+    <!-- Both Ad SDKs -->
     <script src='//libtl.com/sdk.js' data-zone='10067342' data-sdk='show_10067342'></script>
+    <script src="https://ad.gigapub.tech/script?id=3539"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -55,15 +57,7 @@
         /* General UI Styles */
         .section-header { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
         
-        /* Spin Wheel Styles */
-        .wheel-container { position: relative; width: 300px; height: 300px; margin: 2rem auto; }
-        .wheel-wrapper { background: var(--color-card); border-radius: 50%; padding: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,0,0,0.7); }
-        .wheel { width: 100%; height: 100%; transition: transform 5s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .wheel-svg text { font-size: 18px; font-weight: 700; fill: #ffffff; text-anchor: middle; dominant-baseline: middle; }
-        .wheel-pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 30px solid var(--color-accent); z-index: 10; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.5));}
-        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: var(--color-background); border-radius: 50%; z-index: 10; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(249, 115, 22, 0.5); }
-
-        /* Wallet Page Styles */
+        /* Scratch Card Styles */
         .payment-method-card { background-color: #2c2c2c; border: 2px solid #444; border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s ease; }
         .payment-method-card:hover { background-color: var(--color-border); }
         .payment-method-card.selected { border-color: var(--color-accent); background-color: rgba(249, 115, 22, 0.1); box-shadow: 0 0 10px rgba(249, 115, 22, 0.5); }
@@ -122,9 +116,14 @@
                 <div><p class="text-sm font-medium opacity-80">Your Balance</p><p class="text-4xl font-extrabold tracking-tight"><span id="coin-balance">0</span> SHIB</p></div>
                 <div class="bg-white/20 p-3 rounded-full"><i data-lucide="wallet" class="w-7 h-7"></i></div>
             </div>
+            
+            <!-- Earnings Info Card -->
+            <div class="card-bg p-4 rounded-lg text-center">
+                <p class="text-lg font-bold text-white">1,000 SHIB = YOU CAN EARN in 1 HOUR</p>
+            </div>
+            
             <section><h2 class="section-header">Mini Games</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="card-bg rounded-lg p-4 text-center cursor-pointer transition-transform duration-200 hover:scale-105" onclick="navigateTo('spin-page')"><i data-lucide="rotate-cw" class="w-8 h-8 text-accent mx-auto mb-2"></i><h3 class="font-semibold text-white">Spin to Earn</h3><p class="text-xs text-gray-400 mt-1">Win up to 1000 SHIB</p></div>
+                <div class="grid grid-cols-1 gap-4">
                     <div class="card-bg rounded-lg p-4 text-center cursor-pointer transition-transform duration-200 hover:scale-105" onclick="navigateTo('scratch-page')"><i data-lucide="credit-card" class="w-8 h-8 text-accent mx-auto mb-2"></i><h3 class="font-semibold text-white">Scratch to Earn</h3><p class="text-xs text-gray-400 mt-1">Instant rewards</p></div>
                 </div>
             </section>
@@ -136,18 +135,6 @@
                     <div class="card-bg p-3 rounded-lg flex items-center justify-between"><div class="flex items-center space-x-3"><div class="p-2 bg-orange-500/20 rounded-full"><i data-lucide="play-circle" class="w-6 h-6 text-accent"></i></div><div><h3 class="font-semibold text-white">Watch a Video</h3><p class="text-xs text-gray-400">In-App Interstitial</p></div></div><button class="btn-outline-accent font-bold px-4 py-1.5 rounded-lg text-sm" onclick="claimReward('inApp')">Start</button></div>
                 </div>
             </section>
-        </div>
-
-        <!-- Spin to Earn Page (Immersive) -->
-        <div id="spin-page" class="sub-page immersive-page">
-            <div class="page-header"><button class="back-button" onclick="navigateTo('home-page')"><i data-lucide="chevron-left" class="text-white"></i></button><h2 class="section-header text-center m-0">Spin to Earn</h2></div>
-            <div class="p-4 text-center">
-                <p class="text-gray-400 -mt-4 mb-4">Test your luck and win big!</p>
-                <div class="wheel-container"><div class="wheel-wrapper"><div class="wheel" id="wheel"><svg id="spin-wheel-svg" class="wheel-svg" viewBox="0 0 200 200"></svg></div></div><div class="wheel-pointer"></div><div class="wheel-center"><i data-lucide="star" class="w-6 h-6 text-accent"></i></div></div>
-                <div class="card-bg p-4 rounded-lg mt-6"><p id="spin-result" class="text-lg font-semibold h-7">Spin the wheel to win!</p></div>
-                <div class="flex justify-center space-x-4 mt-4"><button id="free-spin-btn" class="w-full p-3 rounded-lg btn-accent flex items-center justify-center gap-2"><i data-lucide="gift"></i>Free Spin</button><button id="ad-spin-btn" class="w-full p-3 rounded-lg btn-outline-accent flex items-center justify-center gap-2"><i data-lucide="video"></i>Watch Ad & Spin</button></div>
-                <p id="next-free-spin" class="text-sm text-gray-400 mt-2">Next free spin in: <span id="free-spin-timer" class="font-semibold text-white">00:00:00</span></p>
-            </div>
         </div>
 
         <!-- Scratch to Earn Page (Immersive) -->
@@ -169,7 +156,7 @@
         <!-- Wallet Page -->
         <div id="wallet-page" class="p-4 space-y-6 sub-page">
             <h2 class="section-header text-center">My Wallet</h2>
-            <div class="accent-gradient p-6 rounded-xl text-white shadow-lg text-center"><p class="text-sm opacity-80">Current Balance</p><p class="text-4xl font-bold mt-1"><span id="wallet-coin-balance">0</span> SHIB</p><p class="text-xs opacity-80 mt-2" id="coin-value-info">...</p></div>
+            <div class="accent-gradient p-6 rounded-xl text-white shadow-lg text-center"><p class="text-sm opacity-80">Current Balance</p><p class="text-4xl font-bold mt-1"><span id="wallet-coin-balance">0</span> SHIB</p></div>
             <div class="card-bg p-4 rounded-lg">
                 <h3 class="font-semibold mb-4 text-lg text-white">1. Select Payment Method</h3><div id="payment-method-grid" class="grid grid-cols-1 gap-3 mb-4"></div>
                 <h3 class="font-semibold mb-2 text-lg text-white">2. Enter Details</h3><div class="space-y-3"><input id="withdraw-amount" type="number" placeholder="Enter SHIB amount" class="w-full p-3 rounded-lg input-field"><div id="payment-details-container"></div></div>
@@ -253,15 +240,10 @@
         headerUserName: document.getElementById('header-user-name'),
         referralCode: document.getElementById('referral-code'),
         minWithdrawalInfo: document.getElementById('min-withdrawal-info'),
-        coinValueInfo: document.getElementById('coin-value-info'),
         notificationDot: document.querySelector('.notification-dot'),
         adsLeftCount: document.getElementById('ads-left-count'),
         paymentDetailsContainer: document.getElementById('payment-details-container'),
         paymentMethodGrid: document.getElementById('payment-method-grid'),
-        freeSpinBtn: document.getElementById('free-spin-btn'),
-        adSpinBtn: document.getElementById('ad-spin-btn'),
-        spinResult: document.getElementById('spin-result'),
-        freeSpinTimer: document.getElementById('free-spin-timer'),
         scratchCanvas: document.getElementById('scratch-canvas'),
         scratchContent: document.getElementById('scratch-content'),
         scratchResult: document.getElementById('scratch-result'),
@@ -279,7 +261,6 @@
         showMainPage('auth-section');
         elementCache.loader.style.display = 'none';
         onAuthStateChanged(auth, handleAuthStateChange);
-        initializeSpinWheelSVG();
         initializeRealisticScratchCard();
     };
 
@@ -292,7 +273,7 @@
             await fetchAppConfig();
             await checkNewNotifications();
             updateUI(); showMainPage('app-container'); navigateTo('home-page');
-            elementCache.loader.style.display = 'none'; initializeSpinTimer();
+            elementCache.loader.style.display = 'none';
         } else { currentUser = null; userData = null; showMainPage('auth-section'); }
     }
     async function fetchUserData() {
@@ -303,7 +284,7 @@
             if (userSnap.exists()) { userData = userSnap.data(); } 
             else {
                 const ownReferralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-                const defaultUserData = { uid: currentUser.uid, name: document.getElementById('signup-name').value || currentUser.email.split('@')[0], email: currentUser.email, balance: 50, referralCode: ownReferralCode, referredBy: null, lastNotificationCheck: new Date(), createdAt: serverTimestamp(), dailyAdCount: 0, lastAdWatchDate: new Date().toISOString().split('T')[0], isBlocked: false, lastFreeSpin: null, scratchCardsUsed: 0, lastScratchDate: null, totalEarned: 50, tasksCompleted: 0, daysActive: 1, successfulReferrals: 0 };
+                const defaultUserData = { uid: currentUser.uid, name: document.getElementById('signup-name').value || currentUser.email.split('@')[0], email: currentUser.email, balance: 50, referralCode: ownReferralCode, referredBy: null, lastNotificationCheck: new Date(), createdAt: serverTimestamp(), dailyAdCount: 0, lastAdWatchDate: new Date().toISOString().split('T')[0], isBlocked: false, scratchCardsUsed: 0, lastScratchDate: null, totalEarned: 50, tasksCompleted: 0, daysActive: 1, successfulReferrals: 0 };
                 await setDoc(userRef, defaultUserData);
                 userData = defaultUserData;
             }
@@ -319,8 +300,6 @@
                     { name: "Shiba Inu (BEP20)", icon: "coins" }
                 ], 
                 dailyAdLimit: 10,  
-                coinValueCoins: 1000,  
-                coinValueInr: 10, 
                 dailyFreeScratches: 3 
             };
         } catch (error) { console.error("Error fetching app config:", error); }
@@ -337,7 +316,6 @@
         elementCache.headerUserName.textContent = userData.name || 'User';
         elementCache.referralCode.textContent = userData.referralCode || '...';
         elementCache.minWithdrawalInfo.textContent = `${(appConfig.minWithdrawal || 3000).toLocaleString()} SHIB`;
-        elementCache.coinValueInfo.textContent = `${(appConfig.coinValueCoins || 1000).toLocaleString()} SHIB = YOU CAN EARN in 1 HOUR}`;
         updatePaymentMethodsUI(); updateAdsLeftCount();
         elementCache.profileTotalEarned.textContent = (userData.totalEarned || 0).toLocaleString();
         elementCache.profileTasksCompleted.textContent = (userData.tasksCompleted || 0).toLocaleString();
@@ -405,7 +383,6 @@
         document.getElementById('notification-bell').addEventListener('click', () => navigateTo('notifications-page'));
         document.getElementById('copy-code-btn').addEventListener('click', copyReferralCode); document.getElementById('share-btn').addEventListener('click', shareReferralCode);
         document.getElementById('withdraw-btn').addEventListener('click', handleWithdrawal); document.getElementById('apply-referral-btn').addEventListener('click', handleApplyReferralCode);
-        elementCache.freeSpinBtn.addEventListener('click', handleFreeSpin); elementCache.adSpinBtn.addEventListener('click', handleAdSpin);
         document.getElementById('new-scratch-btn').addEventListener('click', handleNewScratchCard); document.getElementById('scratch-ad-btn').addEventListener('click', handleScratchAd);
     }
 
@@ -471,15 +448,26 @@
         const userRef = doc(db, "users", currentUser.uid);
         if (userData.lastAdWatchDate !== today) { await updateDoc(userRef, { dailyAdCount: 0, lastAdWatchDate: today }); userData.dailyAdCount = 0; userData.lastAdWatchDate = today; }
         if (userData.dailyAdCount >= appConfig.dailyAdLimit) return showAlert("You've reached your daily ad limit.");
-        if (typeof window.show_9391539 !== 'function') return showAlert("Ad service not available.");
-        let adPromise;
+        
+        let monetagPromise;
         switch(taskType) {
-            case 'interstitial': adPromise = window.show_10067342(); break; 
-            case 'popup': adPromise = window.show_10067342('pop'); break; 
-            case 'inApp': adPromise = window.show_10067342({ type: 'inApp' }); break; 
+            case 'interstitial': monetagPromise = window.show_10067342(); break; 
+            case 'popup': monetagPromise = window.show_10067342('pop'); break; 
+            case 'inApp': monetagPromise = window.show_10067342({ type: 'inApp' }); break; 
             default: return;
         }
-        adPromise.then(async () => {
+
+        // Show both ads sequentially
+        try {
+            // Show Monetag ad first
+            await monetagPromise;
+            
+            // Then show Giga ad
+            if (typeof window.showGiga === 'function') {
+                await window.showGiga();
+            }
+            
+            // If both ads are shown successfully, give reward
             const newCount = (userData.dailyAdCount || 0) + 1;
             await updateDoc(userRef, { dailyAdCount: newCount, tasksCompleted: (userData.tasksCompleted || 0) + 1 });
             userData.dailyAdCount = newCount; userData.tasksCompleted++;
@@ -492,90 +480,12 @@
             
             if (reward > 0) { updateBalance(reward, true); showAlert(`Congratulations! You won ${reward} SHIB.`); }
             updateAdsLeftCount();
-        }).catch(e => { showAlert('Could not show ad.'); });
-    }
-
-    // Spin Wheel Logic
-    let isSpinning = false;
-    const spinRewards = [30, 5, 10, 60, 3, 100, 8, 300];
-    function initializeSpinWheelSVG() {
-        const svg = document.getElementById('spin-wheel-svg');
-        const colors = ['#4b5563', '#374151', '#4b5563', '#374151', '#4b5563', '#374151', '#4b5563', '#fb923c'];
-        const numSegments = spinRewards.length; const angleStep = 360 / numSegments; const radius = 90; const center = 100;
-
-        for (let i = 0; i < numSegments; i++) {
-            const startAngle = i * angleStep; const endAngle = (i + 1) * angleStep;
-            const start = polarToCartesian(center, center, radius, endAngle); const end = polarToCartesian(center, center, radius, startAngle);
-            const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-            const d = ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y, "L", center, center, "Z"].join(" ");
             
-            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            path.setAttribute("d", d); path.setAttribute("fill", colors[i % colors.length]); svg.appendChild(path);
-
-            const textAngle = startAngle + angleStep / 2;
-            const textPos = polarToCartesian(center, center, radius * 0.65, textAngle);
-            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            text.setAttribute("x", textPos.x); text.setAttribute("y", textPos.y);
-            text.setAttribute("transform", `rotate(${textAngle + 90}, ${textPos.x}, ${textPos.y})`);
-            text.textContent = spinRewards[i]; svg.appendChild(text);
+        } catch (e) { 
+            showAlert('Could not show ads.'); 
         }
     }
-    function polarToCartesian(cx, cy, r, angle) { const rad = (angle - 90) * Math.PI / 180.0; return { x: cx + (r * Math.cos(rad)), y: cy + (r * Math.sin(rad)) }; }
-    async function performSpin() {
-        if (isSpinning) return; isSpinning = true;
-        const wheel = document.getElementById('wheel');
-        const currentRot = (parseFloat(wheel.style.transform.replace(/rotate\(|\)|deg/g, '')) || 0) % 360;
-        const randomDeg = Math.floor(Math.random() * 360);
-        const totalRot = currentRot + 1800 + randomDeg;
-        wheel.style.transform = `rotate(${totalRot}deg)`;
-        elementCache.freeSpinBtn.disabled = true; 
-        const adSpinBtnHtml = elementCache.adSpinBtn.innerHTML;
-        elementCache.adSpinBtn.innerHTML = `Spinning...`; elementCache.adSpinBtn.disabled = true;
 
-        setTimeout(async () => {
-            const finalAngle = totalRot % 360; const sectorAngle = 360 / spinRewards.length;
-            const sectorIndex = Math.floor((360 - (finalAngle % 360) + sectorAngle/2) % 360 / sectorAngle);
-            const reward = spinRewards[sectorIndex];
-            elementCache.spinResult.textContent = `Congratulations! You won ${reward} SHIB!`;
-            await updateDoc(doc(db, "users", currentUser.uid), { tasksCompleted: (userData.tasksCompleted || 0) + 1 }); userData.tasksCompleted++;
-            updateBalance(reward, true);
-            isSpinning = false; 
-            elementCache.adSpinBtn.innerHTML = adSpinBtnHtml; elementCache.adSpinBtn.disabled = false;
-            lucide.createIcons({ nodes: [elementCache.adSpinBtn] });
-            initializeSpinTimer();
-        }, 5000);
-    }
-    async function handleFreeSpin() {
-        const now = new Date();
-        const lastSpin = userData.lastFreeSpin ? new Date(userData.lastFreeSpin.seconds * 1000) : null;
-        if (lastSpin && (now.getTime() - lastSpin.getTime()) < (24 * 60 * 60 * 1000)) { showAlert("Next free spin not available yet."); return; }
-        await updateDoc(doc(db, "users", currentUser.uid), { lastFreeSpin: serverTimestamp() });
-        userData.lastFreeSpin = { seconds: Math.floor(now.getTime() / 1000) };
-        performSpin();
-    }
-    async function handleAdSpin() {
-        if (typeof window.show_9391539 !== 'function') return showAlert("Ad service not available.");
-        const adSpinBtnHtml = elementCache.adSpinBtn.innerHTML;
-        elementCache.adSpinBtn.innerHTML = `Loading Ad...`; elementCache.adSpinBtn.disabled = true;
-        window.show_9391539().then(performSpin).catch(e => {
-            showAlert('Could not show ad.');
-            elementCache.adSpinBtn.innerHTML = adSpinBtnHtml; elementCache.adSpinBtn.disabled = false;
-            lucide.createIcons({ nodes: [elementCache.adSpinBtn] });
-        });
-    }
-    function initializeSpinTimer() {
-        const lastSpin = userData.lastFreeSpin ? new Date(userData.lastFreeSpin.seconds * 1000) : null;
-        if (!lastSpin) { elementCache.freeSpinBtn.disabled = false; elementCache.freeSpinTimer.textContent = "Ready!"; return; }
-        const nextSpinTime = new Date(lastSpin.getTime() + 24 * 60 * 60 * 1000);
-        const timerInterval = setInterval(() => {
-            const diff = nextSpinTime - new Date();
-            if (diff <= 0) { clearInterval(timerInterval); elementCache.freeSpinBtn.disabled = false; elementCache.freeSpinTimer.textContent = "Ready!"; return; }
-            elementCache.freeSpinBtn.disabled = true;
-            const h = Math.floor(diff / 3600000); const m = Math.floor((diff % 3600000) / 60000); const s = Math.floor((diff % 60000) / 1000);
-            elementCache.freeSpinTimer.textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }, 1000);
-    }
-    
     // Realistic Scratch Card Logic
     function initializeRealisticScratchCard() {
         const canvas = elementCache.scratchCanvas; if (!canvas) return;
@@ -650,8 +560,18 @@
         generateNewScratchCard();
     }
     async function handleScratchAd() {
-        if (typeof window.show_9391539 !== 'function') return showAlert("Ad service not available.");
-        window.show_9391539().then(generateNewScratchCard).catch(e => showAlert('Could not show ad.'));
+        // Show both ads for scratch card too
+        try {
+            if (typeof window.show_9391539 === 'function') {
+                await window.show_9391539();
+            }
+            if (typeof window.showGiga === 'function') {
+                await window.showGiga();
+            }
+            generateNewScratchCard();
+        } catch(e) {
+            showAlert('Could not show ads.');
+        }
     }
 
     // --- Utility & Helper Functions ---
