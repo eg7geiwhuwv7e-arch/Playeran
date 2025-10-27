@@ -39,6 +39,38 @@
             min-height: 100vh;
         }
 
+        /* Online Users Counter */
+        .online-users {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: var(--green);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 999;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background-color: white;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
         /* Auth Screen */
         .auth-container {
             background-color: var(--white);
@@ -200,19 +232,19 @@
             min-height: 44px;
         }
 
-        .btn-recharge {
+        .btn-deposit {
             background-color: var(--green);
             color: white;
+        }
+
+        .btn-withdraw {
+            background-color: var(--yellow);
+            color: #333;
         }
 
         .btn-rules {
             background-color: var(--red);
             color: white;
-        }
-
-        .btn-reload {
-            background-color: var(--yellow);
-            color: #333;
         }
 
         /* Game Content */
@@ -466,6 +498,8 @@
             padding: 20px;
             transform: translateY(100%);
             transition: transform 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal.active .modal-content {
@@ -560,7 +594,7 @@
             cursor: pointer;
         }
 
-        .btn-place-bet {
+        .btn-confirm {
             flex: 2;
             padding: 14px;
             border: none;
@@ -572,7 +606,7 @@
             cursor: pointer;
         }
 
-        .btn-place-bet:disabled {
+        .btn-confirm:disabled {
             background-color: var(--gray);
             cursor: not-allowed;
         }
@@ -723,36 +757,285 @@
             margin-bottom: 8px;
         }
 
-        /* Recharge Modal */
-        .recharge-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+        /* Deposit Modal */
+        .crypto-options {
+            display: flex;
+            flex-direction: column;
             gap: 12px;
             margin-bottom: 20px;
         }
 
-        .recharge-option {
+        .crypto-option {
             padding: 16px;
             border: 1px solid var(--gray);
             border-radius: var(--border-radius);
-            text-align: center;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .recharge-option.active {
+        .crypto-option.active {
             border-color: var(--green);
             background-color: rgba(16, 185, 129, 0.1);
         }
 
-        .recharge-amount {
-            font-size: 18px;
+        .crypto-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .crypto-details {
+            flex: 1;
+        }
+
+        .crypto-name {
             font-weight: bold;
             margin-bottom: 4px;
         }
 
-        .recharge-bonus {
+        .crypto-network {
             font-size: 12px;
-            color: var(--green);
+            color: var(--gray);
+        }
+
+        .address-container {
+            background-color: var(--gray-light);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            margin: 16px 0;
+            display: none;
+        }
+
+        .address-title {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--gray);
+        }
+
+        .address-value {
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin-bottom: 12px;
+        }
+
+        .copy-btn {
+            background-color: var(--violet);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .deposit-info {
+            background-color: var(--gray-light);
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .info-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        /* Withdraw Modal */
+        .withdraw-form {
+            margin-bottom: 20px;
+        }
+
+        .withdraw-info {
+            background-color: var(--gray-light);
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .transaction-history {
+            margin-top: 20px;
+        }
+
+        .transaction-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .transaction-details {
+            flex: 1;
+        }
+
+        .transaction-type {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .transaction-date {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .transaction-amount {
+            font-weight: bold;
+        }
+
+        .transaction-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+        }
+
+        .status-pending {
+            background-color: var(--yellow);
+            color: #333;
+        }
+
+        .status-completed {
+            background-color: var(--green);
+            color: white;
+        }
+
+        .status-failed {
+            background-color: var(--red);
+            color: white;
+        }
+
+        /* Customer Support Modal */
+        .support-content {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .support-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .support-title {
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .support-description {
+            color: var(--gray);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .telegram-card {
+            background-color: var(--violet);
+            color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+        }
+
+        .telegram-title {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .telegram-username {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .telegram-btn {
+            background-color: white;
+            color: var(--violet);
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* Profile Modal */
+        .profile-content {
+            padding: 20px 0;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background-color: var(--violet);
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .profile-email {
+            color: var(--gray);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background-color: var(--gray-light);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .profile-section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         /* Loading */
@@ -761,9 +1044,19 @@
             padding: 20px;
             display: none;
         }
+
+        .crypto-addresses {
+            display: none;
+        }
     </style>
 </head>
 <body>
+    <!-- Online Users Counter -->
+    <div class="online-users" id="onlineUsers">
+        <div class="online-dot"></div>
+        <span id="onlineCount">156</span> Online
+    </div>
+
     <!-- Auth Screen -->
     <div class="auth-container" id="authContainer">
         <div class="auth-tabs">
@@ -820,17 +1113,17 @@
         <div class="logo">QuickBet</div>
         <div class="balance-container">
             <div class="balance-label">Available Balance</div>
-            <div class="balance-amount" id="balanceAmount">₹ 0.00</div>
+            <div class="balance-amount" id="balanceAmount">$ 0.00</div>
         </div>
         <div class="header-buttons">
-            <button class="btn btn-recharge" id="rechargeBtn">
-                <span>Recharge</span>
+            <button class="btn btn-deposit" id="depositBtn">
+                <span>Deposit</span>
+            </button>
+            <button class="btn btn-withdraw" id="withdrawBtn">
+                <span>Withdraw</span>
             </button>
             <button class="btn btn-rules" id="rulesBtn">
                 <span>Rules</span>
-            </button>
-            <button class="btn btn-reload" id="reloadBtn">
-                <span>Reload</span>
             </button>
         </div>
     </header>
@@ -897,13 +1190,13 @@
             <div class="nav-icon">🏠</div>
             <div>Home</div>
         </div>
-        <div class="nav-item">
-            <div class="nav-icon">💰</div>
-            <div>Win</div>
+        <div class="nav-item" id="supportNav">
+            <div class="nav-icon">💬</div>
+            <div>Support</div>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" id="profileNav">
             <div class="nav-icon">👤</div>
-            <div>My</div>
+            <div>Profile</div>
         </div>
     </nav>
 
@@ -918,17 +1211,17 @@
                 <div class="bet-target" id="betTargetDisplay">Green</div>
             </div>
             <div class="bet-amount-section">
-                <div class="section-title">Bet Amount</div>
+                <div class="section-title">Bet Amount ($)</div>
                 <input type="number" class="amount-input" id="betAmount" placeholder="Enter amount" min="10" value="10">
                 <div class="quick-amounts">
-                    <button class="amount-btn" data-amount="10">₹10</button>
-                    <button class="amount-btn" data-amount="50">₹50</button>
-                    <button class="amount-btn" data-amount="100">₹100</button>
+                    <button class="amount-btn" data-amount="10">$10</button>
+                    <button class="amount-btn" data-amount="50">$50</button>
+                    <button class="amount-btn" data-amount="100">$100</button>
                 </div>
             </div>
             <div class="modal-actions">
                 <button class="btn-cancel" id="cancelBet">Cancel</button>
-                <button class="btn-place-bet" id="placeBet" disabled>Place Bet</button>
+                <button class="btn-confirm" id="placeBet" disabled>Place Bet</button>
             </div>
         </div>
     </div>
@@ -946,9 +1239,9 @@
                 <div class="winning-color violet" id="winningColor">Violet</div>
                 <div class="payout-info" id="payoutInfo">
                     <div class="payout-title">Your Payout</div>
-                    <div class="payout-amount">₹0</div>
+                    <div class="payout-amount">$0</div>
                 </div>
-                <button class="btn btn-place-bet" id="closeResult">Continue</button>
+                <button class="btn-confirm" id="closeResult">Continue</button>
             </div>
         </div>
     </div>
@@ -980,8 +1273,8 @@
                 <div class="rules-section">
                     <div class="rules-title">Betting Rules</div>
                     <ul class="rules-list">
-                        <li>Minimum bet: ₹10</li>
-                        <li>Maximum bet: ₹5,000</li>
+                        <li>Minimum bet: $10</li>
+                        <li>Maximum bet: $5,000</li>
                         <li>Bets are accepted until timer reaches 00:05</li>
                         <li>All bets are final once placed</li>
                     </ul>
@@ -990,57 +1283,292 @@
         </div>
     </div>
 
-    <!-- Recharge Modal -->
-    <div class="modal" id="rechargeModal">
+    <!-- Deposit Modal -->
+    <div class="modal" id="depositModal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">Recharge Balance</div>
-                <button class="close-modal" id="closeRechargeModal">&times;</button>
+                <div class="modal-title">Deposit Funds</div>
+                <button class="close-modal" id="closeDepositModal">&times;</button>
             </div>
-            <div class="recharge-options">
-                <div class="recharge-option" data-amount="500">
-                    <div class="recharge-amount">₹500</div>
-                    <div class="recharge-bonus">+₹0 bonus</div>
+            
+            <div class="deposit-info">
+                <div class="info-title">Deposit Instructions</div>
+                <p>• Minimum deposit: $10</p>
+                <p>• Send only supported cryptocurrencies</p>
+                <p>• Transactions require network confirmation</p>
+                <p>• Contact support if deposit doesn't appear within 30 minutes</p>
+            </div>
+            
+            <div class="crypto-options">
+                <div class="crypto-option active" data-crypto="BTC">
+                    <div class="crypto-icon">B</div>
+                    <div class="crypto-details">
+                        <div class="crypto-name">Bitcoin (BTC)</div>
+                        <div class="crypto-network">Bitcoin Network</div>
+                    </div>
                 </div>
-                <div class="recharge-option" data-amount="1000">
-                    <div class="recharge-amount">₹1000</div>
-                    <div class="recharge-bonus">+₹50 bonus</div>
+                <div class="crypto-option" data-crypto="ETH">
+                    <div class="crypto-icon">E</div>
+                    <div class="crypto-details">
+                        <div class="crypto-name">Ethereum (ETH)</div>
+                        <div class="crypto-network">ERC20</div>
+                    </div>
                 </div>
-                <div class="recharge-option" data-amount="2000">
-                    <div class="recharge-amount">₹2000</div>
-                    <div class="recharge-bonus">+₹150 bonus</div>
+                <div class="crypto-option" data-crypto="TRX">
+                    <div class="crypto-icon">T</div>
+                    <div class="crypto-details">
+                        <div class="crypto-name">Tron (TRX)</div>
+                        <div class="crypto-network">TRC20</div>
+                    </div>
                 </div>
-                <div class="recharge-option" data-amount="5000">
-                    <div class="recharge-amount">₹5000</div>
-                    <div class="recharge-bonus">+₹500 bonus</div>
+                <div class="crypto-option" data-crypto="USDT_ERC20">
+                    <div class="crypto-icon">U</div>
+                    <div class="crypto-details">
+                        <div class="crypto-name">USDT</div>
+                        <div class="crypto-network">ERC20</div>
+                    </div>
+                </div>
+                <div class="crypto-option" data-crypto="USDT_BEP20">
+                    <div class="crypto-icon">U</div>
+                    <div class="crypto-details">
+                        <div class="crypto-name">USDT</div>
+                        <div class="crypto-network">BEP20</div>
+                    </div>
+                </div>
+                <div class="crypto-option" data-crypto="USDT_TRC20">
+                    <div class="crypto-icon">U</div>
+                    <div class="crypto-details">
+                        <div class="crypto-name">USDT</div>
+                        <div class="crypto-network">TRC20</div>
+                    </div>
+                </div>
+                <div class="crypto-option" data-crypto="TON">
+                    <div class="crypto-icon">T</div>
+                    <div class="crypto-details">
+                        <div class="crypto-name">Toncoin (TON)</div>
+                        <div class="crypto-network">TON Network</div>
+                    </div>
+                </div>
+                <div class="crypto-option" data-crypto="SOL">
+                    <div class="crypto-icon">S</div>
+                    <div class="crypto-details">
+                        <div class="crypto-name">Solana (SOL)</div>
+                        <div class="crypto-network">Solana Network</div>
+                    </div>
+                </div>
+                <div class="crypto-option" data-crypto="LTC">
+                    <div class="crypto-icon">L</div>
+                    <div class="crypto-details">
+                        <div class="crypto-name">Litecoin (LTC)</div>
+                        <div class="crypto-network">Litecoin Network</div>
+                    </div>
                 </div>
             </div>
+
+            <div class="address-container" id="addressContainer">
+                <div class="address-title">Send funds to this address:</div>
+                <div class="address-value" id="cryptoAddress">bc1qtp4tc8syg6ztchx02847nemqeu6sxjjpcpqdxw</div>
+                <button class="copy-btn" id="copyAddressBtn">Copy Address</button>
+            </div>
+
             <div class="modal-actions">
-                <button class="btn-cancel" id="cancelRecharge">Cancel</button>
-                <button class="btn-place-bet" id="confirmRecharge">Confirm</button>
+                <button class="btn-cancel" id="cancelDeposit">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div class="modal" id="withdrawModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Withdraw Funds</div>
+                <button class="close-modal" id="closeWithdrawModal">&times;</button>
+            </div>
+            
+            <div class="withdraw-info">
+                <div class="info-title">Withdrawal Information</div>
+                <p>• Minimum withdrawal: $10</p>
+                <p>• Withdrawal fee: 0% (Free)</p>
+                <p>• Processing time: 2-24 hours</p>
+                <p>• Complete KYC verification for larger withdrawals</p>
+            </div>
+            
+            <div class="withdraw-form">
+                <div class="form-group">
+                    <label class="form-label">Withdrawal Amount ($)</label>
+                    <input type="number" class="form-input" id="withdrawAmount" placeholder="Enter amount" min="10">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Cryptocurrency</label>
+                    <select class="form-input" id="withdrawCrypto">
+                        <option value="BTC">Bitcoin (BTC)</option>
+                        <option value="ETH">Ethereum (ETH)</option>
+                        <option value="TRX">Tron (TRX)</option>
+                        <option value="USDT_ERC20">USDT (ERC20)</option>
+                        <option value="USDT_BEP20">USDT (BEP20)</option>
+                        <option value="USDT_TRC20">USDT (TRC20)</option>
+                        <option value="TON">Toncoin (TON)</option>
+                        <option value="SOL">Solana (SOL)</option>
+                        <option value="LTC">Litecoin (LTC)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Wallet Address</label>
+                    <input type="text" class="form-input" id="withdrawAddress" placeholder="Enter your wallet address">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" id="cancelWithdraw">Cancel</button>
+                <button class="btn-confirm" id="confirmWithdraw" disabled>Request Withdrawal</button>
+            </div>
+
+            <div class="transaction-history">
+                <div class="section-title">Recent Transactions</div>
+                <div id="transactionList">
+                    <!-- Transactions will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Support Modal -->
+    <div class="modal" id="supportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Customer Support</div>
+                <button class="close-modal" id="closeSupportModal">&times;</button>
+            </div>
+            <div class="support-content">
+                <div class="support-icon">💬</div>
+                <div class="support-title">Need Help?</div>
+                <div class="support-description">
+                    Our support team is available 24/7 to assist you with any issues or questions you may have regarding your account, deposits, withdrawals, or gameplay.
+                </div>
+                
+                <div class="telegram-card">
+                    <div class="telegram-title">Contact Us on Telegram</div>
+                    <div class="telegram-username">@su8king1</div>
+                    <a href="https://t.me/su8king1" class="telegram-btn" target="_blank">Message on Telegram</a>
+                </div>
+
+                <div class="support-info">
+                    <p><strong>Response Time:</strong> Usually within 5-10 minutes</p>
+                    <p><strong>Availability:</strong> 24/7</p>
+                    <p><strong>Languages:</strong> English, Hindi</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">My Profile</div>
+                <button class="close-modal" id="closeProfileModal">&times;</button>
+            </div>
+            <div class="profile-content">
+                <div class="profile-header">
+                    <div class="profile-avatar">👤</div>
+                    <div class="profile-name" id="profileName">User</div>
+                    <div class="profile-email" id="profileEmail">user@example.com</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalWins">0</div>
+                        <div class="stat-label">Total Wins</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalLosses">0</div>
+                        <div class="stat-label">Total Losses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalBets">0</div>
+                        <div class="stat-label">Total Bets</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="winRate">0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <div class="section-title">
+                        <span>💰</span>
+                        <span>Financial Summary</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Total Deposited</label>
+                        <input type="text" class="form-input" id="totalDeposited" value="$0.00" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Total Withdrawn</label>
+                        <input type="text" class="form-input" id="totalWithdrawn" value="$0.00" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Net Profit/Loss</label>
+                        <input type="text" class="form-input" id="netProfit" value="$0.00" readonly>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <div class="section-title">
+                        <span>📊</span>
+                        <span>Game Statistics</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Favorite Color</label>
+                        <input type="text" class="form-input" id="favoriteColor" value="Not enough data" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Largest Win</label>
+                        <input type="text" class="form-input" id="largestWin" value="$0.00" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Member Since</label>
+                        <input type="text" class="form-input" id="memberSince" value="Loading..." readonly>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Toast -->
-    <div class="toast" id="toast">Bet placed: ₹50 on Green</div>
+    <div class="toast" id="toast">Bet placed: $50 on Green</div>
 
     <script>
         // Firebase Configuration
         const firebaseConfig = {
-  apiKey: "AIzaSyCA1bmlCeCYFBGvI9ibKuKffhCeaefFPQo",
-  authDomain: "tap-earn-84367.firebaseapp.com",
-  projectId: "tap-earn-84367",
-  storageBucket: "tap-earn-84367.firebasestorage.app",
-  messagingSenderId: "902308149009",
-  appId: "1:902308149009:web:83891d442db55c7119beb0",
-  measurementId: "G-2YFQ4J5FE2"
+  apiKey: "AIzaSyCLyx87dtmCGb11tWn-gqROoGbxMCNAH0g",
+  authDomain: "quvjbet.firebaseapp.com",
+  databaseURL: "https://quvjbet-default-rtdb.firebaseio.com",
+  projectId: "quvjbet",
+  storageBucket: "quvjbet.firebasestorage.app",
+  messagingSenderId: "831125225319",
+  appId: "1:831125225319:web:85d0903ff28fde7634f9c2"
 };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        // Crypto Addresses
+        const cryptoAddresses = {
+            'BTC': 'bc1qtp4tc8syg6ztchx02847nemqeu6sxjjpcpqdxw',
+            'ETH': '0x5328AE0060574d3Da41DD54b5B0574055E551251',
+            'TRX': 'TLxjwvyBXBHqfKXTgHaRZYf69mU26K4oNZ',
+            'USDT_ERC20': '0x5328AE0060574d3Da41DD54b5B0574055E551251',
+            'USDT_BEP20': '0x5328AE0060574d3Da41DD54b5B0574055E551251',
+            'USDT_TRC20': 'TLxjwvyBXBHqfKXTgHaRZYf69mU26K4oNZ',
+            'TON': 'UQB9Ta5EZ62Vi-BotmqYuGBN-Zj5zv898_nxTuUcfRD9kEju',
+            'SOL': '5DmtTDLsnpGJWp21TQTxjtnLRHj69JZZW92XBfccuJW9',
+            'LTC': 'ltc1q8m8g8n47j9puphdm35xs9e2z4na4lgelc3q3u2'
+        };
 
         // Game State
         const gameState = {
@@ -1054,6 +1582,7 @@
                 isActive: true
             },
             pendingBets: [],
+            transactions: [],
             history: [
                 { periodId: '20230227057', winningNumber: 7, winningColor: 'violet' },
                 { periodId: '20230227056', winningNumber: 4, winningColor: 'green' },
@@ -1065,10 +1594,21 @@
                 type: null,
                 value: null,
                 amount: 10
+            },
+            userStats: {
+                totalWins: 0,
+                totalLosses: 0,
+                totalBets: 0,
+                totalDeposited: 0,
+                totalWithdrawn: 0,
+                largestWin: 0,
+                favoriteColor: null
             }
         };
 
         // DOM Elements
+        const onlineUsers = document.getElementById('onlineUsers');
+        const onlineCount = document.getElementById('onlineCount');
         const authContainer = document.getElementById('authContainer');
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');
@@ -1099,9 +1639,16 @@
         const betModal = document.getElementById('betModal');
         const resultModal = document.getElementById('resultModal');
         const rulesModal = document.getElementById('rulesModal');
-        const rechargeModal = document.getElementById('rechargeModal');
+        const depositModal = document.getElementById('depositModal');
+        const withdrawModal = document.getElementById('withdrawModal');
+        const supportModal = document.getElementById('supportModal');
+        const profileModal = document.getElementById('profileModal');
         
         // Buttons
+        const depositBtn = document.getElementById('depositBtn');
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        const supportNav = document.getElementById('supportNav');
+        const profileNav = document.getElementById('profileNav');
         const colorButtons = document.querySelectorAll('.color-btn');
         const closeBetModalBtn = document.getElementById('closeBetModal');
         const cancelBetBtn = document.getElementById('cancelBet');
@@ -1110,11 +1657,39 @@
         const closeResultBtn = document.getElementById('closeResult');
         const rulesBtn = document.getElementById('rulesBtn');
         const closeRulesModalBtn = document.getElementById('closeRulesModal');
-        const rechargeBtn = document.getElementById('rechargeBtn');
-        const closeRechargeModalBtn = document.getElementById('closeRechargeModal');
-        const cancelRechargeBtn = document.getElementById('cancelRecharge');
-        const confirmRechargeBtn = document.getElementById('confirmRecharge');
-        const reloadBtn = document.getElementById('reloadBtn');
+        const closeDepositModalBtn = document.getElementById('closeDepositModal');
+        const cancelDepositBtn = document.getElementById('cancelDeposit');
+        const closeWithdrawModalBtn = document.getElementById('closeWithdrawModal');
+        const cancelWithdrawBtn = document.getElementById('cancelWithdraw');
+        const confirmWithdrawBtn = document.getElementById('confirmWithdraw');
+        const closeSupportModalBtn = document.getElementById('closeSupportModal');
+        const closeProfileModalBtn = document.getElementById('closeProfileModal');
+        
+        // Deposit Elements
+        const cryptoOptions = document.querySelectorAll('.crypto-option');
+        const addressContainer = document.getElementById('addressContainer');
+        const cryptoAddressEl = document.getElementById('cryptoAddress');
+        const copyAddressBtn = document.getElementById('copyAddressBtn');
+        
+        // Withdraw Elements
+        const withdrawAmount = document.getElementById('withdrawAmount');
+        const withdrawCrypto = document.getElementById('withdrawCrypto');
+        const withdrawAddress = document.getElementById('withdrawAddress');
+        const transactionList = document.getElementById('transactionList');
+        
+        // Profile Elements
+        const profileName = document.getElementById('profileName');
+        const profileEmail = document.getElementById('profileEmail');
+        const totalWins = document.getElementById('totalWins');
+        const totalLosses = document.getElementById('totalLosses');
+        const totalBets = document.getElementById('totalBets');
+        const winRate = document.getElementById('winRate');
+        const totalDeposited = document.getElementById('totalDeposited');
+        const totalWithdrawn = document.getElementById('totalWithdrawn');
+        const netProfit = document.getElementById('netProfit');
+        const favoriteColor = document.getElementById('favoriteColor');
+        const largestWin = document.getElementById('largestWin');
+        const memberSince = document.getElementById('memberSince');
         
         // Bet Modal Elements
         const betTargetDisplayEl = document.getElementById('betTargetDisplay');
@@ -1128,6 +1703,18 @@
         
         // Toast
         const toastEl = document.getElementById('toast');
+
+        // Online Users Counter
+        function updateOnlineUsers() {
+            const minUsers = 100;
+            const maxUsers = 200;
+            const randomUsers = Math.floor(Math.random() * (maxUsers - minUsers + 1)) + minUsers;
+            onlineCount.textContent = randomUsers;
+        }
+
+        // Update online users every 10-30 seconds
+        setInterval(updateOnlineUsers, Math.floor(Math.random() * 20000) + 10000);
+        updateOnlineUsers(); // Initial update
 
         // Auth Tabs
         const authTabs = document.querySelectorAll('.auth-tab');
@@ -1210,8 +1797,17 @@
                     return db.collection('users').doc(user.uid).set({
                         username: username,
                         email: email,
-                        balance: 1000, // Starting balance
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        balance: 0, // Starting balance
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        stats: {
+                            totalWins: 0,
+                            totalLosses: 0,
+                            totalBets: 0,
+                            totalDeposited: 0,
+                            totalWithdrawn: 0,
+                            largestWin: 0,
+                            favoriteColor: null
+                        }
                     });
                 })
                 .then(() => {
@@ -1240,20 +1836,29 @@
                 .then((doc) => {
                     if (doc.exists) {
                         const userData = doc.data();
-                        gameState.balance = userData.balance || 1000;
+                        gameState.balance = userData.balance || 0;
                         userName.textContent = userData.username || 'User';
                         
-                        // Load user's game history
-                        return db.collection('userBets')
+                        // Load user stats
+                        if (userData.stats) {
+                            gameState.userStats = userData.stats;
+                        }
+                        
+                        // Load user's transactions
+                        return db.collection('transactions')
                             .where('userId', '==', gameState.user.uid)
                             .orderBy('timestamp', 'desc')
                             .limit(10)
                             .get();
                     }
                 })
-                .then((betsSnapshot) => {
-                    if (betsSnapshot) {
-                        // Process user bets if needed
+                .then((transactionsSnapshot) => {
+                    if (transactionsSnapshot) {
+                        gameState.transactions = [];
+                        transactionsSnapshot.forEach(doc => {
+                            gameState.transactions.push(doc.data());
+                        });
+                        updateTransactionHistory();
                     }
                     
                     showGameScreen();
@@ -1286,7 +1891,23 @@
             if (!gameState.user) return;
             
             return db.collection('users').doc(gameState.user.uid).update({
-                balance: gameState.balance
+                balance: gameState.balance,
+                stats: gameState.userStats
+            });
+        }
+
+        // Save transaction to Firestore
+        function saveTransaction(transaction) {
+            if (!gameState.user) return;
+            
+            return db.collection('transactions').add({
+                userId: gameState.user.uid,
+                type: transaction.type,
+                amount: transaction.amount,
+                crypto: transaction.crypto,
+                address: transaction.address,
+                status: transaction.status,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
         }
 
@@ -1311,6 +1932,7 @@
             header.style.display = 'none';
             gameContent.style.display = 'none';
             bottomNav.style.display = 'none';
+            onlineUsers.style.display = 'none';
             gameState.user = null;
         }
 
@@ -1320,6 +1942,7 @@
             header.style.display = 'block';
             gameContent.style.display = 'block';
             bottomNav.style.display = 'flex';
+            onlineUsers.style.display = 'flex';
         }
 
         // Initialize the game
@@ -1329,13 +1952,88 @@
             generateNumberGrid();
             updateParityHistory();
             startTimer();
+            updateProfileStats();
             
             // Add event listeners
             setupEventListeners();
         }
 
+        // Update profile statistics
+        function updateProfileStats() {
+            if (!gameState.user) return;
+            
+            profileName.textContent = userName.textContent;
+            profileEmail.textContent = gameState.user.email;
+            
+            totalWins.textContent = gameState.userStats.totalWins;
+            totalLosses.textContent = gameState.userStats.totalLosses;
+            totalBets.textContent = gameState.userStats.totalBets;
+            
+            const winRateValue = gameState.userStats.totalBets > 0 
+                ? Math.round((gameState.userStats.totalWins / gameState.userStats.totalBets) * 100)
+                : 0;
+            winRate.textContent = winRateValue + '%';
+            
+            totalDeposited.value = '$' + gameState.userStats.totalDeposited.toLocaleString('en-US', {minimumFractionDigits: 2});
+            totalWithdrawn.value = '$' + gameState.userStats.totalWithdrawn.toLocaleString('en-US', {minimumFractionDigits: 2});
+            
+            const netProfitValue = gameState.userStats.totalWithdrawn - gameState.userStats.totalDeposited;
+            netProfit.value = '$' + netProfitValue.toLocaleString('en-US', {minimumFractionDigits: 2});
+            
+            favoriteColor.value = gameState.userStats.favoriteColor || 'Not enough data';
+            largestWin.value = '$' + gameState.userStats.largestWin.toLocaleString('en-US', {minimumFractionDigits: 2});
+            
+            // Get member since date
+            db.collection('users').doc(gameState.user.uid).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        if (userData.createdAt) {
+                            const joinDate = userData.createdAt.toDate();
+                            memberSince.value = joinDate.toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            });
+                        }
+                    }
+                });
+        }
+
         // Set up all event listeners
         function setupEventListeners() {
+            // Deposit/Withdraw buttons
+            depositBtn.addEventListener('click', () => openModal(depositModal));
+            withdrawBtn.addEventListener('click', () => openModal(withdrawModal));
+            
+            // Support and Profile buttons
+            supportNav.addEventListener('click', () => openModal(supportModal));
+            profileNav.addEventListener('click', () => {
+                updateProfileStats();
+                openModal(profileModal);
+            });
+            
+            // Crypto options
+            cryptoOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    cryptoOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    
+                    const crypto = option.getAttribute('data-crypto');
+                    showCryptoAddress(crypto);
+                });
+            });
+            
+            // Copy address button
+            copyAddressBtn.addEventListener('click', copyAddressToClipboard);
+            
+            // Withdraw form validation
+            withdrawAmount.addEventListener('input', validateWithdrawForm);
+            withdrawAddress.addEventListener('input', validateWithdrawForm);
+            
+            // Confirm withdraw
+            confirmWithdrawBtn.addEventListener('click', requestWithdrawal);
+            
             // Color buttons
             colorButtons.forEach(button => {
                 button.addEventListener('click', () => {
@@ -1381,24 +2079,120 @@
             rulesBtn.addEventListener('click', () => openModal(rulesModal));
             closeRulesModalBtn.addEventListener('click', () => closeModal(rulesModal));
             
-            // Recharge modal
-            rechargeBtn.addEventListener('click', () => openModal(rechargeModal));
-            closeRechargeModalBtn.addEventListener('click', () => closeModal(rechargeModal));
-            cancelRechargeBtn.addEventListener('click', () => closeModal(rechargeModal));
-            confirmRechargeBtn.addEventListener('click', confirmRecharge);
+            // Deposit modal
+            closeDepositModalBtn.addEventListener('click', () => closeModal(depositModal));
+            cancelDepositBtn.addEventListener('click', () => closeModal(depositModal));
             
-            // Recharge options
-            document.querySelectorAll('.recharge-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    document.querySelectorAll('.recharge-option').forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                });
+            // Withdraw modal
+            closeWithdrawModalBtn.addEventListener('click', () => closeModal(withdrawModal));
+            cancelWithdrawBtn.addEventListener('click', () => closeModal(withdrawModal));
+            
+            // Support modal
+            closeSupportModalBtn.addEventListener('click', () => closeModal(supportModal));
+            
+            // Profile modal
+            closeProfileModalBtn.addEventListener('click', () => closeModal(profileModal));
+        }
+
+        // Show crypto address for deposit
+        function showCryptoAddress(crypto) {
+            const address = cryptoAddresses[crypto];
+            if (address) {
+                cryptoAddressEl.textContent = address;
+                addressContainer.style.display = 'block';
+            }
+        }
+
+        // Copy address to clipboard
+        function copyAddressToClipboard() {
+            const address = cryptoAddressEl.textContent;
+            navigator.clipboard.writeText(address).then(() => {
+                showToast('Address copied to clipboard');
+            });
+        }
+
+        // Validate withdraw form
+        function validateWithdrawForm() {
+            const amount = parseFloat(withdrawAmount.value) || 0;
+            const address = withdrawAddress.value.trim();
+            const minWithdraw = 10;
+            
+            if (amount < minWithdraw) {
+                confirmWithdrawBtn.disabled = true;
+                confirmWithdrawBtn.textContent = `Minimum withdrawal is $${minWithdraw}`;
+            } else if (amount > gameState.balance) {
+                confirmWithdrawBtn.disabled = true;
+                confirmWithdrawBtn.textContent = 'Insufficient balance';
+            } else if (!address) {
+                confirmWithdrawBtn.disabled = true;
+                confirmWithdrawBtn.textContent = 'Enter wallet address';
+            } else {
+                confirmWithdrawBtn.disabled = false;
+                confirmWithdrawBtn.textContent = 'Request Withdrawal';
+            }
+        }
+
+        // Request withdrawal
+        function requestWithdrawal() {
+            const amount = parseFloat(withdrawAmount.value);
+            const crypto = withdrawCrypto.value;
+            const address = withdrawAddress.value.trim();
+            
+            // Create withdrawal transaction
+            const transaction = {
+                type: 'withdrawal',
+                amount: amount,
+                crypto: crypto,
+                address: address,
+                status: 'pending'
+            };
+            
+            // Add to transactions
+            gameState.transactions.unshift(transaction);
+            updateTransactionHistory();
+            
+            // Update user stats
+            gameState.userStats.totalWithdrawn += amount;
+            
+            // Save to Firebase
+            saveTransaction(transaction);
+            updateUserBalance();
+            
+            showToast(`Withdrawal request submitted for $${amount}`);
+            closeModal(withdrawModal);
+            
+            // Reset form
+            withdrawAmount.value = '';
+            withdrawAddress.value = '';
+        }
+
+        // Update transaction history display
+        function updateTransactionHistory() {
+            if (gameState.transactions.length === 0) {
+                transactionList.innerHTML = '<div class="transaction-item">No transactions yet</div>';
+                return;
+            }
+            
+            let html = '';
+            gameState.transactions.forEach(transaction => {
+                const date = new Date(transaction.timestamp?.toDate() || new Date());
+                const statusClass = `status-${transaction.status}`;
+                
+                html += `
+                    <div class="transaction-item">
+                        <div class="transaction-details">
+                            <div class="transaction-type">${transaction.type.toUpperCase()} - ${transaction.crypto}</div>
+                            <div class="transaction-date">${date.toLocaleDateString()}</div>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <div class="transaction-amount">$${transaction.amount}</div>
+                            <div class="transaction-status ${statusClass}">${transaction.status}</div>
+                        </div>
+                    </div>
+                `;
             });
             
-            // Reload button
-            reloadBtn.addEventListener('click', () => {
-                location.reload();
-            });
+            transactionList.innerHTML = html;
         }
 
         // Generate the number grid
@@ -1456,7 +2250,7 @@
 
         // Update balance display
         function updateBalanceDisplay() {
-            balanceAmountEl.textContent = `₹ ${gameState.balance.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            balanceAmountEl.textContent = `$ ${gameState.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
         }
 
         // Update parity history
@@ -1527,10 +2321,10 @@
             
             if (amount < minBet) {
                 placeBetBtn.disabled = true;
-                placeBetBtn.textContent = `Minimum bet is ₹${minBet}`;
+                placeBetBtn.textContent = `Minimum bet is $${minBet}`;
             } else if (amount > maxBet) {
                 placeBetBtn.disabled = true;
-                placeBetBtn.textContent = `Maximum bet is ₹${maxBet}`;
+                placeBetBtn.textContent = `Maximum bet is $${maxBet}`;
             } else if (amount > gameState.balance) {
                 placeBetBtn.disabled = true;
                 placeBetBtn.textContent = 'Insufficient balance';
@@ -1548,6 +2342,9 @@
             // Deduct amount from balance
             gameState.balance -= amount;
             updateBalanceDisplay();
+            
+            // Update user stats
+            gameState.userStats.totalBets += 1;
             
             // Add to pending bets
             const betId = Date.now().toString();
@@ -1574,7 +2371,7 @@
                 targetDisplay = `Number ${value}`;
             }
             
-            showToast(`Bet placed: ₹${amount} on ${targetDisplay}`);
+            showToast(`Bet placed: $${amount} on ${targetDisplay}`);
             
             // Close modal
             closeBetModal();
@@ -1613,7 +2410,7 @@
                             <div class="bet-color ${colorClass}"></div>
                             <div>${targetDisplay}</div>
                         </div>
-                        <div class="bet-amount">₹${bet.amount}</div>
+                        <div class="bet-amount">$${bet.amount}</div>
                     </div>
                 `;
             });
@@ -1707,8 +2504,15 @@
                     totalPayout += payout;
                     bet.status = 'won';
                     bet.payout = payout;
+                    
+                    // Update user stats
+                    gameState.userStats.totalWins += 1;
+                    if (payout > gameState.userStats.largestWin) {
+                        gameState.userStats.largestWin = payout;
+                    }
                 } else {
                     bet.status = 'lost';
+                    gameState.userStats.totalLosses += 1;
                 }
             });
             
@@ -1737,7 +2541,7 @@
             const payoutAmountEl = payoutInfoEl.querySelector('.payout-amount');
             
             if (userPayout > 0) {
-                payoutAmountEl.textContent = `₹${userPayout}`;
+                payoutAmountEl.textContent = `$${userPayout}`;
                 payoutInfoEl.style.display = 'block';
             } else {
                 payoutInfoEl.style.display = 'none';
@@ -1783,25 +2587,6 @@
             startTimer();
         }
 
-        // Confirm recharge
-        function confirmRecharge() {
-            const selectedOption = document.querySelector('.recharge-option.active');
-            if (!selectedOption) {
-                showToast('Please select a recharge amount');
-                return;
-            }
-            
-            const amount = parseInt(selectedOption.getAttribute('data-amount'));
-            gameState.balance += amount;
-            updateBalanceDisplay();
-            
-            // Update Firebase
-            updateUserBalance();
-            
-            showToast(`Balance recharged: ₹${amount}`);
-            closeModal(rechargeModal);
-        }
-
         // Show toast message
         function showToast(message) {
             toastEl.textContent = message;
@@ -1835,8 +2620,8 @@
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', () => {
-            // Check if user is already logged in
-            // This will trigger the auth state listener
+            // Show BTC address by default
+            showCryptoAddress('BTC');
         });
     </script>
 </body>
